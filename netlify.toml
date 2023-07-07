@@ -1,0 +1,15 @@
+[build]
+command = "npm run build"
+functions = "functions"
+
+[build.environment]
+OAUTH_CLIENTID = "720232693293-2s8dcjjp124hn9oc1koje93dba72k3lq.apps.googleusercontent.com"
+OAUTH_CLIENT_SECRET = "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"
+REDIRECT_URI = "http://localhost:3001/callback"
+OAUTH_REFRESH_TOKEN = "1//04pphtty6HjB4CgYIARAAGAQSNwF-L9IrA_MgDp-yb2T6iz1E60RNYbQB0Hcz4ABxEvd3LjewLoJXddC0Jw6i2zRy7DU64nXxIuU"
+EMAIL = "pulkitnov2@gmail.com"
+
+[[redirects]]
+from = "/send"
+to = "https://tubular-dusk-7c7c38.netlify.app/.netlify/functions/server/send"
+status = 200

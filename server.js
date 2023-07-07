@@ -50,44 +50,49 @@ transporter.verify((err, success) => {
     : console.log(`=== Server is ready to take messages: ${success} ===`);
 });
 
-app.post("/send", upload.single("attachment"), function (req, res) {
-  const { senderEmail, recipientEmail, subject, message } = req.body;
+app.post(
+  "/.netlify/functions/server/send",
+  upload.single("attachment"),
+  function (req, res) {
+    const { email, subject, message } = req.body;
 
-  let mailOptions = {
-    from: senderEmail,
-    to: recipientEmail,
-    subject: subject,
-    text: message,
-    attachments: [],
-  };
+    let mailOptions = {
+      from: email,
+      to: process.env.EMAIL,
+      subject: `Message from: ${email}`,
+      text: message,
+      attachments: [],
+    };
 
-  if (req.file) {
-    mailOptions.attachments.push({
-      filename: req.file.originalname,
-      path: req.file.path,
-    });
-  }
-
-  transporter.sendMail(mailOptions, function (err, data) {
-    if (err) {
-      console.error(err);
-      res.json({
-        status: "fail",
-      });
-    } else {
-      console.log("== Message Sent ==");
-      res.json({
-        status: "success",
+    if (req.file) {
+      mailOptions.attachments.push({
+        filename: req.file.originalname,
+        path: req.file.path,
       });
     }
-  });
-});
+
+    transporter.sendMail(mailOptions, function (err, data) {
+      if (err) {
+        console.error(err);
+        res.json({
+          status: "fail",
+        });
+      } else {
+        console.log("== Message Sent ==");
+        res.json({
+          status: "success",
+        });
+      }
+    });
+  }
+);
 
 app.get("/auth", (req, res) => {
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
     scope: "https://www.googleapis.com/auth/gmail.send",
+    redirect_uri: "https://tubular-dusk-7c7c38.netlify.app/callback",
   });
 
   res.redirect(authUrl);
@@ -119,7 +124,7 @@ app.get("/callback", async (req, res) => {
   }
 });
 
-const port = 3001;
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
